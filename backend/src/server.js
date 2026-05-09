@@ -13,9 +13,19 @@ const fleetData = require('./data/fleet.json');
 
 const PORT = process.env.PORT || 3001;
 
+const path = require('path');
+
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: '1mb' }));
+
+// Serve frontend in production
+app.use(express.static(path.join(__dirname, '../../frontend/dist')));
+
+// Fallback for React Router
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../frontend/dist/index.html'));
+});
 
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });

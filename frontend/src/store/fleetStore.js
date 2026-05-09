@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 
-const WS_URL = `ws://${window.location.hostname}:3001`;
+const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+const WS_URL = import.meta.env.DEV ? `ws://${window.location.hostname}:3001` : `${protocol}//${window.location.host}`;
 
 export const useFleetStore = create((set, get) => ({
   // Connection
