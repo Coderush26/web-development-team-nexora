@@ -19,13 +19,7 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '1mb' }));
 
-// Serve frontend in production
-app.use(express.static(path.join(__dirname, '../../frontend/dist')));
-
-// Fallback for React Router
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../frontend/dist/index.html'));
-});
+app.get('/', (req, res) => res.send('Fleet Crisis Ops Backend is running! Connect via WebSocket.'));
 
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
