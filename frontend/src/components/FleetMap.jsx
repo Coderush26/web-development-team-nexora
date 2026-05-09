@@ -230,8 +230,8 @@ export default function FleetMap({ canDraw = false, focusShipId = null }) {
       label: '🛰️ Satellite',
     },
     dark: {
-      url: 'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png',
-      attribution: '&copy; Stadia Maps',
+      url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+      attribution: '&copy; OpenStreetMap &copy; CARTO',
       label: '🌑 Dark',
     },
   };
