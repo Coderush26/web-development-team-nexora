@@ -1,7 +1,9 @@
 import { create } from 'zustand';
 
 const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-const WS_URL = import.meta.env.DEV ? `ws://${window.location.hostname}:3001` : `${protocol}//${window.location.host}`;
+// If deployed to Vercel, use the VITE_WS_URL env var to point to Render
+const WS_URL = import.meta.env.VITE_WS_URL || 
+  (import.meta.env.DEV ? `ws://${window.location.hostname}:3001` : `${protocol}//${window.location.host}`);
 
 export const useFleetStore = create((set, get) => ({
   // Connection
