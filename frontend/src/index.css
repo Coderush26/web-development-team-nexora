@@ -427,3 +427,49 @@ body {
   box-shadow: 0 4px 15px rgba(0,0,0,0.6), 0 0 15px rgba(16,185,129,0.2) !important;
   font-family: 'Outfit', sans-serif !important; letter-spacing: 0.5px;
 }
+
+/* -- Responsive Mobile & Tablet -- */
+@media (max-width: 1024px) {
+  .app-body {
+    flex-direction: column;
+    overflow-y: auto;
+    background: var(--bg-primary);
+  }
+  .map-container {
+    min-height: 55vh;
+    height: 55vh;
+    flex: none;
+    border-bottom: 2px solid var(--accent-blue);
+  }
+  .sidebar, .sidebar-right {
+    width: 100%;
+    flex: none;
+    border-right: none;
+    border-left: none;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    box-shadow: none;
+    min-height: 400px;
+  }
+  .app-header {
+    padding: 0 16px;
+  }
+  .brand-name {
+    font-size: 16px;
+  }
+  .brand-sub {
+    display: none;
+  }
+  .live-pill {
+    padding: 4px 10px;
+    font-size: 10px;
+  }
+  .timeline-bar {
+    position: relative;
+    background: rgba(3,7,18,0.95);
+    padding: 16px;
+  }
+  .modal {
+    padding: 24px;
+    width: 90vw;
+  }
+}
