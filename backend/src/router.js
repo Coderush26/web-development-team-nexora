@@ -42,7 +42,7 @@ function pathIntersectsZone(path, zone) {
   return false;
 }
 
-const GRID_RES = 0.08;
+const GRID_RES = 0.03;
 
 function latLngToCell(lat, lng, bbox) {
   return {
@@ -147,7 +147,17 @@ function computeRoute(ship, destination, zones, navigablePolygon, bbox, weatherC
 
   const cellPath=aStar(sc,ec,blocked,cost,rows,cols);
   if (!cellPath) {
-    // Fallback: direct straight line (better than stranded if no zones block it)
+    // Fallback: If no path found (grid issue), and cross-strait, use a waypoint.
+    const isPersianGulf = (lng) => lng < 55.8;
+    const isGulfOman = (lng) => lng > 56.6;
+    if ((isPersianGulf(ship.lng) && isGulfOman(destination.lng)) || (isGulfOman(ship.lng) && isPersianGulf(destination.lng))) {
+      return [
+        { lat: ship.lat, lng: ship.lng },
+        { lat: 26.45, lng: 56.25 }, // Strait of Hormuz waypoint
+        { lat: destination.lat, lng: destination.lng }
+      ];
+    }
+    // Final fallback: direct straight line
     return [{ lat:ship.lat, lng:ship.lng }, { lat:destination.lat, lng:destination.lng }];
   }
   return simplifyPath(cellPath.map(({row,col})=>cellToLatLng(row,col,bbox)));
