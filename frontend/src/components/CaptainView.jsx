@@ -194,7 +194,7 @@ export default function CaptainView() {
 
         {/* Map focused on my ship */}
         <div className="map-container">
-          <FleetMap canDraw={false} focusShipId={myShipId} />
+          <FleetMap canDraw={false} focusShipId={myShipId} isCaptainView={true} />
         </div>
 
         {/* Right panel — distress + assistance */}
@@ -224,16 +224,26 @@ export default function CaptainView() {
           {/* Ship-to-ship assistance */}
           <div style={{ padding:14, borderBottom:'1px solid var(--border)' }}>
             <div style={{ fontWeight:700, fontSize:13, color:'var(--accent-yellow)', marginBottom:10 }}>
-              🤝 Request Assistance
+              🤝 Request Nearby Assistance
             </div>
             <select className="form-select" value={assistShip}
               onChange={e => setAssistShip(e.target.value)} style={{ marginBottom:8 }} id="assist-ship">
               <option value="">-- Select a ship --</option>
               {ships
                 .filter(s => s.id !== myShipId && s.status !== 'arrived' && s.status !== 'out_of_fuel')
-                .sort((a, b) => a.name.localeCompare(b.name))
+                .filter(s => {
+                  if (!myShip) return false;
+                  const R = 6371;
+                  const dLat = (s.lat - myShip.lat) * Math.PI / 180;
+                  const dLon = (s.lng - myShip.lng) * Math.PI / 180;
+                  const a = Math.sin(dLat/2)**2 + Math.cos(myShip.lat * Math.PI / 180) * Math.cos(s.lat * Math.PI / 180) * Math.sin(dLon/2)**2;
+                  const dist = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                  s._dist = dist;
+                  return dist <= 150; // 150km radar range
+                })
+                .sort((a, b) => a._dist - b._dist)
                 .map(s => (
-                  <option key={s.id} value={s.id}>{s.name} [{s.status}]</option>
+                  <option key={s.id} value={s.id}>{s.name} [{s.status}] ({Math.round(s._dist)}km)</option>
                 ))}
             </select>
             <select className="form-select" value={assistType}

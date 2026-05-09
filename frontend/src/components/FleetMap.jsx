@@ -201,7 +201,7 @@ function AnimatedRoute({ ship }) {
   );
 }
 
-export default function FleetMap({ canDraw = false, focusShipId = null }) {
+export default function FleetMap({ canDraw = false, focusShipId = null, isCaptainView = false }) {
   const ships      = useFleetStore(s => s.ships);
   const zones      = useFleetStore(s => s.zones);
   const ports      = useFleetStore(s => s.ports);
@@ -209,8 +209,20 @@ export default function FleetMap({ canDraw = false, focusShipId = null }) {
   const selectShip = useFleetStore(s => s.selectShip);
   const drawZone   = useFleetStore(s => s.drawZone);
   const removeZone = useFleetStore(s => s.removeZone);
-  const display    = useInterpolatedShips(ships);
+  const rawDisplay = useInterpolatedShips(ships);
   const [mapStyle, setMapStyle] = useState('nautical');
+
+  const myShip = isCaptainView && focusShipId ? rawDisplay.find(s => s.id === focusShipId) : null;
+  const display = rawDisplay.filter(s => {
+    if (!isCaptainView || !myShip) return true;
+    if (s.id === myShip.id) return true;
+    const R = 6371;
+    const dLat = (s.lat - myShip.lat) * Math.PI / 180;
+    const dLon = (s.lng - myShip.lng) * Math.PI / 180;
+    const a = Math.sin(dLat/2)**2 + Math.cos(myShip.lat * Math.PI / 180) * Math.cos(s.lat * Math.PI / 180) * Math.sin(dLon/2)**2;
+    const dist = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return dist <= 150; // Only render ships within 150km radar radius
+  });
 
   const center = focusShipId
     ? (() => { const s = ships.find(x => x.id === focusShipId); return s ? [s.lat, s.lng] : [26.0, 56.0]; })()
